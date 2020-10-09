@@ -1,0 +1,19 @@
+{
+  "name": "nats-streaming-sandbox",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "publisher": "ts-node-dev --rs --no-notify src/stream-health-publisher.ts",
+    "listener": "ts-node-dev --rs --no-notify src/stream-health-listener.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^14.11.5",
+    "node-nats-streaming": "^0.3.2",
+    "ts-node-dev": "^1.0.0-pre.63",
+    "typescript": "^4.0.3"
+  }
+}
