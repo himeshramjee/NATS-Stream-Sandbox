@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "publisher": "ts-node-dev --rs --no-notify src/stream-health-publisher.ts",
-    "listener": "ts-node-dev --rs --no-notify src/stream-health-listener.ts"
+    "listener": "ts-node-dev --rs --no-notify src/stream-health-listener.ts",
+    "spike":  "ts-node-dev --rs --no-notify src/spike.ts"
   },
   "keywords": [],
   "author": "",
