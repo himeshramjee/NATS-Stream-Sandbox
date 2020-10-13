@@ -1,10 +1,16 @@
 import { Message, Stan, Subscription } from "node-nats-streaming";
 import { NATSBaseClient } from "./base-client";
+import { ListenerGroups, Subjects } from "./custom-types";
 
-export abstract class NATSBaseListener extends NATSBaseClient {
-  abstract subject: string;
-  abstract queueGroupName: string;
-  abstract onMessage(data: any, msg: Message): void;
+interface Event {
+  subject: Subjects;
+  data: any;
+  listenerGroup: ListenerGroups;
+}
+export abstract class NATSBaseListener<T extends Event> extends NATSBaseClient {
+  abstract subject: T["subject"];
+  abstract queueGroupName: T["listenerGroup"];
+  abstract onMessage(data: T["data"], msg: Message): void;
 
   protected ackWait: number = 1000;
 
