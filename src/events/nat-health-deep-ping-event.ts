@@ -1,4 +1,4 @@
-import { ListenerGroups, Subjects } from "./custom-types";
+import { ListenerGroups, Subjects } from "./types/custom-types";
 
 export interface NatsHealthDeepPingEvent {
   listenerGroup: ListenerGroups.NAT_HEALTH;

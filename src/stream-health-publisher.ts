@@ -1,6 +1,9 @@
-import { NATSBaseClient } from "./events/base-client";
+import { NATSBaseClient } from "./events/base-classes/base-client";
+import { NATSEvent } from "./events/interfaces/event";
+import { NatsHealthDeepPingEvent } from "./events/nat-health-deep-ping-event";
+import { Subjects } from "./events/types/custom-types";
 
-class StreamHealthPublisherClient extends NATSBaseClient {
+class StreamHealthPublisherClient<T extends NATSEvent> extends NATSBaseClient {
   constructor() {
     super(
       "teekeet-streaming-cluster", 
@@ -13,14 +16,14 @@ class StreamHealthPublisherClient extends NATSBaseClient {
     console.log("Publisher connected to NATS on port 4222");
 
     // Message payload
-    const data = JSON.stringify({
+    const data: T["data"] = JSON.stringify({
       id: "10101010",
       message: "Deep ping from Publisher",
     });
     
     // Publish a message
     this.client.publish(
-      "nats-health:deep-ping",
+      Subjects.NATS_HEALTH_DEEP_PING,
       data,
       (err, guid) => {
         if (err) {
@@ -33,4 +36,4 @@ class StreamHealthPublisherClient extends NATSBaseClient {
   }
 }
 
-const listenerClient: StreamHealthPublisherClient = new StreamHealthPublisherClient();
+const listenerClient: StreamHealthPublisherClient<NatsHealthDeepPingEvent> = new StreamHealthPublisherClient();
