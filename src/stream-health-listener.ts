@@ -1,6 +1,6 @@
 import { Message } from "node-nats-streaming";
 import { NATSBaseListener } from "./events/base-classes/base-listener";
-import { iNatsHealthDeepPingEvent } from "./events/nat-health-deep-ping-event";
+import { iNatsHealthDeepPingEvent } from "./events/interfaces/iNat-health-deep-ping-event";
 import { ListenerGroups, Subjects } from "./events/types/custom-types";
 
 export class StreamHealthListener extends NATSBaseListener<iNatsHealthDeepPingEvent> {

@@ -1,5 +1,5 @@
 import { NATSBasePublisher } from "./events/base-classes/base-publisher";
-import { iNatsHealthDeepPingEvent } from "./events/nat-health-deep-ping-event";
+import { iNatsHealthDeepPingEvent } from "./events/interfaces/iNat-health-deep-ping-event";
 import { Subjects } from "./events/types/custom-types";
 
 class StreamHealthPublisher extends NATSBasePublisher<iNatsHealthDeepPingEvent> {
