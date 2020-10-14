@@ -1,8 +1,8 @@
 import { NATSBasePublisher } from "./events/base-classes/base-publisher";
-import { NatsHealthDeepPingEvent } from "./events/nat-health-deep-ping-event";
+import { iNatsHealthDeepPingEvent } from "./events/nat-health-deep-ping-event";
 import { Subjects } from "./events/types/custom-types";
 
-class StreamHealthPublisher extends NATSBasePublisher<NatsHealthDeepPingEvent> {
+class StreamHealthPublisher extends NATSBasePublisher<iNatsHealthDeepPingEvent> {
   subject: Subjects.NATS_HEALTH_DEEP_PING = Subjects.NATS_HEALTH_DEEP_PING;
   public clientConnected = false;
 
@@ -10,7 +10,7 @@ class StreamHealthPublisher extends NATSBasePublisher<NatsHealthDeepPingEvent> {
     console.log(`Publisher with subject ${this.subject} connected to NATS on port 4222`);
   }
 
-  async publishEvent(data?: NatsHealthDeepPingEvent["data"]) {
+  async publishEvent(data?: iNatsHealthDeepPingEvent["data"]) {
     if (!data) {
       // Message payload
       data = {
@@ -32,6 +32,12 @@ class StreamHealthPublisher extends NATSBasePublisher<NatsHealthDeepPingEvent> {
 
 const publisherClient: StreamHealthPublisher = new StreamHealthPublisher();
 setInterval(async () => {
-  let guid = await publisherClient.publishEvent();
-  console.log(`\t Event published. Guid: ${guid}`);
+  await publisherClient.publishEvent()
+  .then(guid => {
+    // FIXME: Why is guid still undefined at this point?
+    console.log(`\t Event published. Guid: ${guid}`);
+  })
+  .catch(error => {
+    console.error(`Failed to publish message via StreamHealthPublisher. Error: ${error}`)
+  });
 }, 10000);
