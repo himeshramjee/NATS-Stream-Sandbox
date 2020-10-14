@@ -2,44 +2,57 @@ import nats, { Stan } from "node-nats-streaming";
 import { randomBytes } from "crypto";
 
 export abstract class NATSBaseClient {
-  protected client: Stan;
+  protected stan: Stan;
+  private clusterID: string; 
+  private clientIDPrefix: string;
+  private natsssURI: string;
 
-  abstract onClientConnect(): void;
+  abstract onClientConnected(): void;
 
   constructor(clusterID: string, clientIDPrefix: string, natsssURI: string) {
-    // Create a `client` connection to NATS Stream
-    console.log(`Connecting client to ${natsssURI}/${clusterID}...`);
+    this.clusterID = clusterID;
+    this.clientIDPrefix = clientIDPrefix;
+    this.natsssURI = natsssURI;
 
-    this.client = nats.connect(
-      clusterID,
-      `${clientIDPrefix}-${randomBytes(4).toString("hex")}`,
+    // Create a `client` connection to NATS Stream    
+    this.stan = this.connect();
+  }
+
+  public connect() : Stan {
+    console.log(`Connecting client to ${this.natsssURI}/${this.clusterID}...`);
+
+    this.stan = nats.connect(
+      this.clusterID,
+      `${this.clientIDPrefix}-${randomBytes(4).toString("hex")}`,
       {
-        url: natsssURI,
+        url: this.natsssURI,
       }
     );
 
     // Register event handlers/callbacks
-    this.client.on("connect", () => {
+    this.stan.on("connect", () => {
       console.log("NATS client connected.");
     
-      this.onClientConnect();
+      this.onClientConnected();
     });
     
-    this.client.on("error", (err) => {
+    this.stan.on("error", (err) => {
       console.error('Doh! Unhandled exception in Nats client. Error: \n', err);
     });
     
-    this.client.on("close", () => {
+    this.stan.on("close", () => {
       console.log("Client connection closed. Exiting process gracefully...I hope.");
       process.exit();
     });
     
     // FIXME: Not sure if these are OS/platform agnostic signal names
     process.on("SIGINT", () => {
-      this.client.close();
+      this.stan?.close();
     });
     process.on("SIGTERM", () => { 
-      this.client.close();
+      this.stan?.close();
     });
+
+    return this.stan;
   }
 }

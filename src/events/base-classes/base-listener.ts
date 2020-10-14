@@ -1,8 +1,8 @@
 import { Message, Stan, Subscription } from "node-nats-streaming";
 import { NATSBaseClient } from "./base-client";
-import { NATSEvent } from "../interfaces/event";
+import { iNATSEvent } from "../interfaces/iEvent";
 
-export abstract class NATSBaseListener<T extends NATSEvent> extends NATSBaseClient {
+export abstract class NATSBaseListener<T extends iNATSEvent> extends NATSBaseClient {
   abstract subject: T["subject"];
   abstract queueGroupName: T["listenerGroup"];
   abstract onMessage(data: T["data"], msg: Message): void;
@@ -11,7 +11,7 @@ export abstract class NATSBaseListener<T extends NATSEvent> extends NATSBaseClie
 
   // Setup subscription options
   subscriptionOptions() {
-    return this.client
+    return this.stan
       .subscriptionOptions()
       .setManualAckMode(true) // Ensure NATSSS doesn't assume successfull processing of a message
       .setAckWait(this.ackWait)
@@ -19,7 +19,7 @@ export abstract class NATSBaseListener<T extends NATSEvent> extends NATSBaseClie
       .setDurableName(this.queueGroupName); // Required to allow a listener to catchup with missed messages by having NATSSS track delivery status of each message
   }
 
-  onClientConnect() {
+  onClientConnected() {
     console.log(`New StreamHealthListener started for ${this.subject} within ${this.queueGroupName}`);
     
     console.log("Registering subscriptions...");
@@ -28,7 +28,7 @@ export abstract class NATSBaseListener<T extends NATSEvent> extends NATSBaseClie
 
   protected registerSubscriptions() {
     // Register new subscription for subject and within a queue group
-    const subscription = this.client.subscribe(
+    const subscription = this.stan.subscribe(
       this.subject,
       this.queueGroupName,
       this.subscriptionOptions()
